@@ -1,0 +1,654 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotiFiesta - Futuristic Push Notifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber-blue': '#00D4FF',
+                        'neon-purple': '#A855F7',
+                        'neon-green': '#00FF94',
+                        'dark-bg': '#0A0A0F',
+                        'dark-surface': '#1A1A2E',
+                        'cyber-text': '#E0FFFF'
+                    },
+                    fontFamily: {
+                        'orbitron': ['Orbitron', 'monospace'],
+                        'inter': ['Inter', 'sans-serif']
+                    },
+                    animation: {
+                        'glow-pulse': 'glow-pulse 2s ease-in-out infinite alternate',
+                        'float': 'float 3s ease-in-out infinite',
+                        'neon-flicker': 'neon-flicker 1.5s infinite alternate',
+                        'cyber-spin': 'cyber-spin 8s linear infinite'
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        @keyframes glow-pulse {
+            from { box-shadow: 0 0 20px #00D4FF, 0 0 30px #00D4FF, 0 0 40px #00D4FF; }
+            to { box-shadow: 0 0 30px #00D4FF, 0 0 40px #00D4FF, 0 0 50px #00D4FF; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes neon-flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        @keyframes cyber-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .cyber-glass {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+        }
+        
+        .holographic-border {
+            background: linear-gradient(45deg, #00D4FF, #A855F7, #00FF94, #00D4FF);
+            background-size: 400% 400%;
+            animation: gradient-shift 3s ease infinite;
+            padding: 2px;
+        }
+        
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .particle-bg {
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 255, 148, 0.1) 0%, transparent 50%);
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-cyber-text font-inter min-h-screen particle-bg overflow-x-hidden">
+    
+    <!-- Animated Background Elements -->
+    <div class="fixed inset-0 pointer-events-none z-0">
+        <div class="absolute top-10 left-10 w-32 h-32 border-2 border-cyber-blue opacity-30 animate-cyber-spin"></div>
+        <div class="absolute top-20 right-20 w-24 h-24 border border-neon-purple opacity-20 animate-float"></div>
+        <div class="absolute bottom-20 left-1/4 w-16 h-16 border border-neon-green opacity-40 animate-pulse"></div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="relative z-10 cyber-glass border-b border-cyber-blue/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-cyber-blue to-neon-purple rounded-lg flex items-center justify-center animate-glow-pulse">
+                        <i class="fas fa-satellite-dish text-white text-lg"></i>
+                    </div>
+                    <h1 class="font-orbitron text-2xl font-bold neon-text text-cyber-blue">NotiFiesta</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-cyber-text hover:text-cyber-blue transition-colors duration-300">
+                        <i class="fas fa-cog text-lg"></i>
+                    </button>
+                    <div class="w-8 h-8 bg-gradient-to-r from-neon-purple to-neon-green rounded-full animate-pulse"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Login Section -->
+        <!-- @COMPONENT: LoginComponent [authentication options] -->
+        <div id="login-section" class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="font-orbitron text-4xl font-bold neon-text text-cyber-blue mb-4 animate-neon-flicker">
+                    Access Control Terminal
+                </h2>
+                <p class="text-cyber-text/80 text-lg">Initialize your connection to the notification matrix</p>
+            </div>
+            
+            <div class="max-w-md mx-auto">
+                <div class="holographic-border rounded-xl">
+                    <div class="cyber-glass rounded-xl p-8">
+                        
+                        <!-- Google OAuth Button -->
+                        <button data-event="click:handleGoogleAuth" data-implementation="Should redirect to Google OAuth flow" 
+                                class="w-full bg-gradient-to-r from-cyber-blue to-neon-purple text-white font-semibold py-4 px-6 rounded-lg 
+                                       hover:scale-105 transform transition-all duration-300 animate-glow-pulse mb-4
+                                       border border-cyber-blue/50 shadow-lg shadow-cyan-500/25">
+                            <i class="fab fa-google mr-3"></i>
+                            Quantum Login with Google
+                        </button>
+                        
+                        <div class="flex items-center my-6">
+                            <div class="flex-1 h-px bg-gradient-to-r from-transparent via-cyber-blue to-transparent"></div>
+                            <span class="px-4 text-cyber-text/60 text-sm">OR</span>
+                            <div class="flex-1 h-px bg-gradient-to-r from-transparent via-cyber-blue to-transparent"></div>
+                        </div>
+                        
+                        <!-- Username/Password Form -->
+                        <form data-implementation="Should validate credentials against MongoDB">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-cyber-text/80 text-sm font-medium mb-2">Username</label>
+                                    <input type="text" data-bind="auth.username" placeholder="Enter your username" 
+                                           class="w-full bg-dark-surface border border-cyber-blue/30 rounded-lg px-4 py-3 
+                                                  text-cyber-text placeholder-cyber-text/50 focus:border-cyber-blue 
+                                                  focus:ring-2 focus:ring-cyber-blue/20 transition-all duration-300">
+                                </div>
+                                <div>
+                                    <label class="block text-cyber-text/80 text-sm font-medium mb-2">Password</label>
+                                    <input type="password" data-bind="auth.password" placeholder="Enter your password"
+                                           class="w-full bg-dark-surface border border-cyber-blue/30 rounded-lg px-4 py-3 
+                                                  text-cyber-text placeholder-cyber-text/50 focus:border-cyber-blue 
+                                                  focus:ring-2 focus:ring-cyber-blue/20 transition-all duration-300">
+                                </div>
+                                <button type="submit" data-event="click:handleLogin" 
+                                        class="w-full bg-gradient-to-r from-neon-purple to-neon-green text-white font-semibold 
+                                               py-3 px-6 rounded-lg hover:scale-105 transform transition-all duration-300 
+                                               border border-neon-green/50 shadow-lg shadow-green-500/25">
+                                    <i class="fas fa-rocket mr-2"></i>
+                                    Initialize Connection
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: LoginComponent -->
+
+        <!-- Dashboard Section -->
+        <!-- @COMPONENT: Dashboard [main user interface] -->
+        <div id="dashboard-section" class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            
+            <!-- Link Generation Panel -->
+            <div class="lg:col-span-2">
+                <div class="holographic-border rounded-xl">
+                    <div class="cyber-glass rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-orbitron text-xl font-bold text-cyber-blue neon-text">
+                                <i class="fas fa-link mr-2"></i>
+                                Transmission Generator
+                            </h3>
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 bg-neon-green rounded-full animate-pulse"></div>
+                                <div class="w-3 h-3 bg-cyber-blue rounded-full animate-pulse delay-75"></div>
+                                <div class="w-3 h-3 bg-neon-purple rounded-full animate-pulse delay-150"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Message Composer -->
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <label class="block text-cyber-text/80 text-sm font-medium mb-2">Notification Message</label>
+                                <textarea data-bind="message.content" placeholder="Craft your quantum message..." 
+                                          rows="4" class="w-full bg-dark-surface border border-cyber-blue/30 rounded-lg px-4 py-3 
+                                                         text-cyber-text placeholder-cyber-text/50 focus:border-cyber-blue 
+                                                         focus:ring-2 focus:ring-cyber-blue/20 transition-all duration-300 resize-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-cyber-text/80 text-sm font-medium mb-2">Friend Identifier</label>
+                                <input type="text" data-bind="friend.name" placeholder="e.g., Best Friend, Work Buddy..." 
+                                       class="w-full bg-dark-surface border border-cyber-blue/30 rounded-lg px-4 py-3 
+                                              text-cyber-text placeholder-cyber-text/50 focus:border-cyber-blue 
+                                              focus:ring-2 focus:ring-cyber-blue/20 transition-all duration-300">
+                            </div>
+                        </div>
+                        
+                        <!-- Generate Link Button -->
+                        <button data-event="click:generateLink" data-implementation="Should create unique link and store in MongoDB"
+                                class="w-full bg-gradient-to-r from-cyber-blue via-neon-purple to-neon-green text-white 
+                                       font-semibold py-4 px-6 rounded-lg hover:scale-105 transform transition-all duration-300 
+                                       animate-glow-pulse border border-cyber-blue/50 shadow-xl shadow-cyan-500/30">
+                            <i class="fas fa-satellite mr-2"></i>
+                            Generate Quantum Link
+                        </button>
+                        
+                        <!-- Generated Link Display -->
+                        <div class="mt-6 p-4 bg-dark-surface/50 border border-neon-green/30 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span class="text-cyber-text/60 text-sm">Generated Link:</span>
+                                <button class="text-neon-green hover:text-neon-green/80 transition-colors">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="mt-2 p-3 bg-dark-bg rounded border font-mono text-xs text-neon-green break-all">
+                                https://notifiesta.app/n/qR7mK9pX2vN5 <!-- @PLACEHOLDER: Dynamic generated link -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Stats Panel -->
+            <div class="space-y-6">
+                <div class="holographic-border rounded-xl">
+                    <div class="cyber-glass rounded-xl p-6">
+                        <h4 class="font-orbitron text-lg font-bold text-neon-purple mb-4 neon-text">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            Mission Stats
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-cyber-text/80">Active Links</span>
+                                <span class="text-cyber-blue font-bold text-xl" data-bind="stats.activeLinks">12</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-cyber-text/80">Total Friends</span>
+                                <span class="text-neon-green font-bold text-xl" data-bind="stats.totalFriends">28</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-cyber-text/80">Messages Sent</span>
+                                <span class="text-neon-purple font-bold text-xl" data-bind="stats.messagesSent">156</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="holographic-border rounded-xl">
+                    <div class="cyber-glass rounded-xl p-6">
+                        <h4 class="font-orbitron text-lg font-bold text-cyber-blue mb-4 neon-text">
+                            <i class="fas fa-zap mr-2"></i>
+                            Quick Actions
+                        </h4>
+                        <div class="space-y-3">
+                            <button class="w-full text-left p-3 bg-dark-surface/50 border border-cyber-blue/30 rounded-lg 
+                                           hover:border-cyber-blue hover:bg-dark-surface/70 transition-all duration-300">
+                                <i class="fas fa-users text-cyber-blue mr-2"></i>
+                                <span class="text-cyber-text">Manage Friends</span>
+                            </button>
+                            <button class="w-full text-left p-3 bg-dark-surface/50 border border-neon-purple/30 rounded-lg 
+                                           hover:border-neon-purple hover:bg-dark-surface/70 transition-all duration-300">
+                                <i class="fas fa-history text-neon-purple mr-2"></i>
+                                <span class="text-cyber-text">View History</span>
+                            </button>
+                            <button class="w-full text-left p-3 bg-dark-surface/50 border border-neon-green/30 rounded-lg 
+                                           hover:border-neon-green hover:bg-dark-surface/70 transition-all duration-300">
+                                <i class="fas fa-cog text-neon-green mr-2"></i>
+                                <span class="text-cyber-text">Settings</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Dashboard -->
+
+        <!-- Friends List Section -->
+        <!-- @COMPONENT: FriendsList [friend management interface] -->
+        <div class="mb-12">
+            <div class="holographic-border rounded-xl">
+                <div class="cyber-glass rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-orbitron text-xl font-bold text-cyber-blue neon-text">
+                            <i class="fas fa-users mr-2"></i>
+                            Connected Entities
+                        </h3>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-cyber-text/60 text-sm">
+                                <span data-bind="friends.count">8</span> active connections
+                            </div>
+                            <button class="bg-gradient-to-r from-neon-green to-cyber-blue text-white px-4 py-2 rounded-lg 
+                                           hover:scale-105 transform transition-all duration-300 text-sm font-semibold">
+                                <i class="fas fa-plus mr-2"></i>
+                                New Connection
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Friends Grid -->
+                    <!-- @MAP: friends.map(friend => ( -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-dark-surface/50 border border-cyber-blue/30 rounded-lg p-4 hover:border-cyber-blue 
+                                    hover:bg-dark-surface/70 transition-all duration-300 group">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-r from-cyber-blue to-neon-purple rounded-full 
+                                           flex items-center justify-center group-hover:animate-pulse">
+                                    <i class="fas fa-user text-white text-sm"></i>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-cyber-text/60 hover:text-cyber-blue transition-colors">
+                                        <i class="fas fa-edit text-xs"></i>
+                                    </button>
+                                    <button class="text-cyber-text/60 hover:text-red-400 transition-colors">
+                                        <i class="fas fa-trash text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <h4 class="font-semibold text-cyber-text mb-1" data-bind="friend.customName">Alex Thompson</h4>
+                            <p class="text-cyber-text/60 text-xs mb-3">Last active: <span data-bind="friend.lastActive">2 hours ago</span></p>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-neon-green" data-bind="friend.messageCount">12 messages</span>
+                                <button class="text-cyber-blue hover:text-cyber-blue/80 transition-colors">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-dark-surface/50 border border-neon-purple/30 rounded-lg p-4 hover:border-neon-purple 
+                                    hover:bg-dark-surface/70 transition-all duration-300 group">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-r from-neon-purple to-neon-green rounded-full 
+                                           flex items-center justify-center group-hover:animate-pulse">
+                                    <i class="fas fa-user text-white text-sm"></i>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-cyber-text/60 hover:text-neon-purple transition-colors">
+                                        <i class="fas fa-edit text-xs"></i>
+                                    </button>
+                                    <button class="text-cyber-text/60 hover:text-red-400 transition-colors">
+                                        <i class="fas fa-trash text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <h4 class="font-semibold text-cyber-text mb-1" data-bind="friend.customName">Sarah Wilson</h4>
+                            <p class="text-cyber-text/60 text-xs mb-3">Last active: <span data-bind="friend.lastActive">1 day ago</span></p>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-neon-green" data-bind="friend.messageCount">8 messages</span>
+                                <button class="text-neon-purple hover:text-neon-purple/80 transition-colors">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-dark-surface/50 border border-neon-green/30 rounded-lg p-4 hover:border-neon-green 
+                                    hover:bg-dark-surface/70 transition-all duration-300 group">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-r from-neon-green to-cyber-blue rounded-full 
+                                           flex items-center justify-center group-hover:animate-pulse">
+                                    <i class="fas fa-user text-white text-sm"></i>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-cyber-text/60 hover:text-neon-green transition-colors">
+                                        <i class="fas fa-edit text-xs"></i>
+                                    </button>
+                                    <button class="text-cyber-text/60 hover:text-red-400 transition-colors">
+                                        <i class="fas fa-trash text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <h4 class="font-semibold text-cyber-text mb-1" data-bind="friend.customName">Mike Chen</h4>
+                            <p class="text-cyber-text/60 text-xs mb-3">Last active: <span data-bind="friend.lastActive">3 minutes ago</span></p>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-neon-green" data-bind="friend.messageCount">24 messages</span>
+                                <button class="text-neon-green hover:text-neon-green/80 transition-colors">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-dark-surface/30 border-2 border-dashed border-cyber-blue/30 rounded-lg p-4 
+                                    hover:border-cyber-blue hover:bg-dark-surface/40 transition-all duration-300 
+                                    flex items-center justify-center cursor-pointer group">
+                            <div class="text-center">
+                                <div class="w-10 h-10 bg-gradient-to-r from-cyber-blue/20 to-neon-purple/20 rounded-full 
+                                           flex items-center justify-center mx-auto mb-2 group-hover:animate-pulse">
+                                    <i class="fas fa-plus text-cyber-blue text-sm"></i>
+                                </div>
+                                <span class="text-cyber-blue text-sm font-medium">Add Friend</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: FriendsList -->
+
+        <!-- Message History Section -->
+        <!-- @COMPONENT: MessageHistory [history tracking interface] -->
+        <div class="mb-12">
+            <div class="holographic-border rounded-xl">
+                <div class="cyber-glass rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-orbitron text-xl font-bold text-neon-purple neon-text">
+                            <i class="fas fa-history mr-2"></i>
+                            Transmission Archive
+                        </h3>
+                        <div class="flex items-center space-x-4">
+                            <select class="bg-dark-surface border border-cyber-blue/30 rounded-lg px-3 py-2 text-cyber-text text-sm
+                                           focus:border-cyber-blue focus:ring-2 focus:ring-cyber-blue/20">
+                                <option>All Friends</option>
+                                <option>Alex Thompson</option>
+                                <option>Sarah Wilson</option>
+                                <option>Mike Chen</option>
+                            </select>
+                            <button class="text-cyber-text/60 hover:text-cyber-blue transition-colors">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- History Timeline -->
+                    <div class="space-y-4">
+                        <!-- @MAP: messageHistory.map(message => ( -->
+                        <div class="flex items-start space-x-4 p-4 bg-dark-surface/30 border border-cyber-blue/20 rounded-lg 
+                                    hover:border-cyber-blue/40 hover:bg-dark-surface/40 transition-all duration-300">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-gradient-to-r from-cyber-blue to-neon-purple rounded-full 
+                                           flex items-center justify-center">
+                                    <i class="fas fa-user text-white text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-semibold text-cyber-text" data-bind="message.friendName">Alex Thompson</h4>
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-neon-green text-xs" data-bind="message.status">
+                                            <i class="fas fa-check-circle mr-1"></i>Delivered
+                                        </span>
+                                        <span class="text-cyber-text/60 text-xs" data-bind="message.timestamp">2 hours ago</span>
+                                    </div>
+                                </div>
+                                <p class="text-cyber-text/80 text-sm mb-2" data-bind="message.content">
+                                    "Hey! Check out this awesome new feature I found. You're going to love it! 🚀"
+                                </p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4 text-xs text-cyber-text/60">
+                                        <span>Link: <span class="text-cyber-blue" data-bind="message.linkId">qR7mK9pX2vN5</span></span>
+                                        <span>Opened: <span data-bind="message.openedAt">2:34 PM</span></span>
+                                    </div>
+                                    <button class="text-cyber-blue hover:text-cyber-blue/80 transition-colors text-xs">
+                                        <i class="fas fa-redo mr-1"></i>Resend
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4 p-4 bg-dark-surface/30 border border-neon-purple/20 rounded-lg 
+                                    hover:border-neon-purple/40 hover:bg-dark-surface/40 transition-all duration-300">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-gradient-to-r from-neon-purple to-neon-green rounded-full 
+                                           flex items-center justify-center">
+                                    <i class="fas fa-user text-white text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-semibold text-cyber-text" data-bind="message.friendName">Sarah Wilson</h4>
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-yellow-400 text-xs" data-bind="message.status">
+                                            <i class="fas fa-clock mr-1"></i>Pending
+                                        </span>
+                                        <span class="text-cyber-text/60 text-xs" data-bind="message.timestamp">1 day ago</span>
+                                    </div>
+                                </div>
+                                <p class="text-cyber-text/80 text-sm mb-2" data-bind="message.content">
+                                    "Don't forget about our meeting tomorrow! See you then 📅"
+                                </p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4 text-xs text-cyber-text/60">
+                                        <span>Link: <span class="text-neon-purple" data-bind="message.linkId">mN8qR2pX7vK3</span></span>
+                                        <span>Not opened yet</span>
+                                    </div>
+                                    <button class="text-neon-purple hover:text-neon-purple/80 transition-colors text-xs">
+                                        <i class="fas fa-redo mr-1"></i>Resend
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                    
+                    <!-- Load More Button -->
+                    <div class="text-center mt-6">
+                        <button class="bg-gradient-to-r from-dark-surface to-dark-surface/50 border border-cyber-blue/30 
+                                       text-cyber-blue px-6 py-3 rounded-lg hover:border-cyber-blue hover:bg-dark-surface 
+                                       transition-all duration-300">
+                            <i class="fas fa-chevron-down mr-2"></i>
+                            Load More Archives
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: MessageHistory -->
+
+        <!-- Friend Notification Page Preview -->
+        <!-- @COMPONENT: NotificationPage [recipient interface preview] -->
+        <div class="mb-12">
+            <div class="text-center mb-6">
+                <h3 class="font-orbitron text-2xl font-bold text-neon-green neon-text mb-2">
+                    Friend Notification Page Preview
+                </h3>
+                <p class="text-cyber-text/60">This is what your friends see when they visit your shared link</p>
+            </div>
+            
+            <div class="max-w-md mx-auto">
+                <div class="holographic-border rounded-xl">
+                    <div class="cyber-glass rounded-xl p-8 text-center">
+                        <!-- Animated Icon -->
+                        <div class="w-20 h-20 bg-gradient-to-r from-neon-green to-cyber-blue rounded-full 
+                                   flex items-center justify-center mx-auto mb-6 animate-glow-pulse">
+                            <i class="fas fa-bell text-white text-2xl animate-bounce"></i>
+                        </div>
+                        
+                        <!-- Message Content -->
+                        <h4 class="font-orbitron text-xl font-bold text-cyber-text mb-4 neon-text">
+                            Incoming Transmission
+                        </h4>
+                        <div class="bg-dark-surface/50 border border-neon-green/30 rounded-lg p-4 mb-6">
+                            <p class="text-cyber-text" data-bind="notification.message">
+                                "Hey! Check out this awesome new feature I found. You're going to love it! 🚀"
+                            </p>
+                            <p class="text-cyber-text/60 text-sm mt-2">
+                                From: <span class="text-neon-green" data-bind="notification.senderName">Your Friend</span>
+                            </p>
+                        </div>
+                        
+                        <!-- Permission Request -->
+                        <div class="space-y-4">
+                            <p class="text-cyber-text/80 text-sm">
+                                Allow notifications to stay connected with the quantum network?
+                            </p>
+                            <div class="flex space-x-3">
+                                <button data-event="click:allowNotifications" 
+                                        class="flex-1 bg-gradient-to-r from-neon-green to-cyber-blue text-white font-semibold 
+                                               py-3 px-4 rounded-lg hover:scale-105 transform transition-all duration-300 
+                                               animate-glow-pulse border border-neon-green/50">
+                                    <i class="fas fa-check mr-2"></i>
+                                    Allow
+                                </button>
+                                <button data-event="click:denyNotifications"
+                                        class="flex-1 bg-dark-surface border border-red-400/30 text-red-400 font-semibold 
+                                               py-3 px-4 rounded-lg hover:border-red-400 hover:bg-red-400/10 
+                                               transition-all duration-300">
+                                    <i class="fas fa-times mr-2"></i>
+                                    Deny
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Success State -->
+                        <div class="mt-6 p-4 bg-neon-green/10 border border-neon-green/30 rounded-lg">
+                            <div class="flex items-center justify-center text-neon-green">
+                                <i class="fas fa-satellite-dish mr-2"></i>
+                                <span class="text-sm font-semibold">Connection Established</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: NotificationPage -->
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="relative z-10 bg-dark-surface/30 border-t border-cyber-blue/20 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-3 mb-4">
+                    <div class="w-8 h-8 bg-gradient-to-r from-cyber-blue to-neon-purple rounded-lg flex items-center justify-center">
+                        <i class="fas fa-satellite-dish text-white text-sm"></i>
+                    </div>
+                    <span class="font-orbitron text-xl font-bold text-cyber-blue neon-text">NotiFiesta</span>
+                </div>
+                <p class="text-cyber-text/60 text-sm">
+                    Quantum messaging system - Connecting minds across the digital matrix
+                </p>
+                <div class="flex items-center justify-center space-x-6 mt-4">
+                    <button class="text-cyber-text/60 hover:text-cyber-blue transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </button>
+                    <button class="text-cyber-text/60 hover:text-neon-purple transition-colors">
+                        <i class="fab fa-discord"></i>
+                    </button>
+                    <button class="text-cyber-text/60 hover:text-neon-green transition-colors">
+                        <i class="fab fa-github"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            // TODO: Implement business logic, API calls, and state management
+            
+            // Particle animation for background elements
+            function animateParticles() {
+                const particles = document.querySelectorAll('.particle-bg');
+                // TODO: Add particle system implementation
+            }
+            
+            // Initialize animations when page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                // TODO: Initialize notification permission checking
+                // TODO: Set up service worker for push notifications
+                // TODO: Connect to MongoDB backend
+                // TODO: Implement real-time updates
+                
+                console.log('NotiFiesta - Quantum messaging system initialized');
+            });
+            
+            // Glowing effect management
+            function updateGlowEffects() {
+                const glowElements = document.querySelectorAll('.animate-glow-pulse');
+                // TODO: Add dynamic glow intensity based on user interaction
+            }
+            
+        })();
+    </script>
+</body>
+</html>
