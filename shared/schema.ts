@@ -46,8 +46,9 @@ export interface Message {
   friendId: string;
   title: string;
   message: string;
-  status: string; // sent, delivered, failed
+  status: string; // sent, delivered, failed, scheduled
   sentAt: Date;
+  scheduledFor?: Date; // Date and time when the notification should be sent
 }
 
 // Zod Schemas for validation
@@ -67,6 +68,7 @@ export const messageSchema = z.object({
   friendId: z.string().min(1, "Friend is required"),
   title: z.string().min(1, "Title is required"),
   message: z.string().min(1, "Message is required"),
+  scheduledFor: z.string().optional(), // ISO string for scheduled date/time
 });
 
 export const insertUserSchema = z.object({
@@ -103,6 +105,7 @@ export const insertMessageSchema = z.object({
   title: z.string(),
   message: z.string(),
   status: z.string().default("sent"),
+  scheduledFor: z.date().optional(), // Date object for scheduled date/time
 });
 
 // Type exports

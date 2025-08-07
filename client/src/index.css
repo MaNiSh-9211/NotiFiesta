@@ -138,3 +138,18 @@
   background: hsl(195, 60%, 70%);
   color: hsl(0, 0%, 0%);
 }
+
+/* Loading dots animation */
+.loading-dots {
+  display: inline-block;
+  animation: loadingDots 1.5s infinite;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: hsl(195, 60%, 70%);
+}
+
+@keyframes loadingDots {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}

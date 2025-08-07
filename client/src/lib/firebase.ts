@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut } from "firebase/auth";
+import { getAuth, signInWithRedirect, signInWithPopup, getRedirectResult, GoogleAuthProvider, signOut } from "firebase/auth";
 
 // import dotenv from "dotenv";
 // dotenv.config();
@@ -28,25 +28,69 @@ export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
 export class FirebaseService {
-  async signInWithGoogle(): Promise<void> {
-    await signInWithRedirect(auth, googleProvider);
+  async signInWithGoogle(): Promise<any> {
+    console.log("Firebase: Using popup for Google sign-in");
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log("Firebase: Popup result received");
+      
+      if (result) {
+        const user = result.user;
+        console.log("Firebase: User from popup:", {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName
+        });
+        
+        const idToken = await user.getIdToken();
+        console.log("Firebase: ID token obtained, length:", idToken.length);
+        
+        return {
+          firebaseUid: user.uid,
+          email: user.email,
+          name: user.displayName,
+          avatar: user.photoURL,
+          idToken: idToken,
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error("Firebase: Error with popup sign-in:", error);
+      throw error;
+    }
   }
 
   async handleRedirectResult(): Promise<any> {
-    const result = await getRedirectResult(auth);
-    if (result) {
-      const user = result.user;
-      const idToken = await user.getIdToken();
+    console.log("Firebase: Handling redirect result...");
+    try {
+      const result = await getRedirectResult(auth);
+      console.log("Firebase: Raw redirect result:", result ? "Result exists" : "No result");
       
-      return {
-        firebaseUid: user.uid,
-        email: user.email,
-        name: user.displayName,
-        avatar: user.photoURL,
-        idToken: idToken,
-      };
+      if (result) {
+        const user = result.user;
+        console.log("Firebase: User from redirect:", {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName
+        });
+        
+        const idToken = await user.getIdToken();
+        console.log("Firebase: ID token obtained, length:", idToken.length);
+        
+        return {
+          firebaseUid: user.uid,
+          email: user.email,
+          name: user.displayName,
+          avatar: user.photoURL,
+          idToken: idToken,
+        };
+      }
+      console.log("Firebase: No redirect result found");
+      return null;
+    } catch (error) {
+      console.error("Firebase: Error handling redirect result:", error);
+      return null;
     }
-    return null;
   }
 
   async signOut(): Promise<void> {

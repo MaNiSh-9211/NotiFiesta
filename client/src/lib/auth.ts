@@ -33,11 +33,26 @@ class AuthService {
   }
 
   async googleAuth(idToken: string): Promise<AuthResponse> {
-    const response = await apiRequest("POST", "/api/auth/google", { idToken });
-    const data = await response.json();
-    
-    this.setAuth(data.token, data.user);
-    return data;
+    console.log("Auth Service: Starting Google auth with token length:", idToken.length);
+    try {
+      const response = await apiRequest("POST", "/api/auth/google", { idToken });
+      console.log("Auth Service: Google auth response status:", response.status);
+      
+      const data = await response.json();
+      console.log("Auth Service: Google auth data received:", {
+        hasToken: !!data.token,
+        hasUser: !!data.user,
+        tokenLength: data.token?.length,
+        userId: data.user?.id
+      });
+      
+      this.setAuth(data.token, data.user);
+      console.log("Auth Service: Auth data set successfully");
+      return data;
+    } catch (error) {
+      console.error("Auth Service: Google auth error:", error);
+      throw error;
+    }
   }
 
   async getCurrentUser(): Promise<User | null> {

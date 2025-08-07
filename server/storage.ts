@@ -31,6 +31,7 @@ export interface IStorage {
   // Message operations
   getMessagesByUserId(userId: string): Promise<Message[]>;
   getMessagesByFriendId(friendId: string): Promise<Message[]>;
+  getScheduledMessages(beforeDate: Date): Promise<Message[]>; // Get messages scheduled before a certain date
   createMessage(message: InsertMessage): Promise<Message>;
   updateMessage(id: string, updates: Partial<Message>): Promise<Message | undefined>;
 }
@@ -187,6 +188,13 @@ export class MongoStorage implements IStorage {
 
   async getMessagesByFriendId(friendId: string): Promise<Message[]> {
     return await this.messages.find({ friendId }).sort({ sentAt: -1 }).toArray();
+  }
+
+  async getScheduledMessages(beforeDate: Date): Promise<Message[]> {
+    return await this.messages.find({ 
+      status: "scheduled",
+      scheduledFor: { $lte: beforeDate }
+    }).toArray();
   }
 
   async createMessage(insertMessage: InsertMessage): Promise<Message> {

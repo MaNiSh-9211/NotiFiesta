@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import webpush from "web-push";
 import admin from "firebase-admin";
-
+import { Request, Response } from "express";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -187,6 +187,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
   //   }
   // });
 
+
+  app.post("/api/auth/google", async (req: Request, res: Response) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({ message: "Firebase ID token is required" });
+    }
+
+    // Verify Firebase ID token
+    let decodedToken;
+    try {
+      decodedToken = await admin.auth().verifyIdToken(idToken);
+    } catch (error) {
+      return res.status(401).json({ message: "Invalid Firebase token" });
+    }
+
+    const { uid, email, name, picture } = decodedToken;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required from Firebase token" });
+    }
+
+    // Find or create user
+    let user = await storage.getUserByFirebaseUid(uid);
+
+    if (!user) {
+      const existingUser = await storage.getUserByEmail(email);
+
+      if (existingUser) {
+        user = await storage.updateUser(existingUser.id, {
+          firebaseUid: uid,
+          avatar: picture ?? undefined,
+        });
+      } else {
+        const username = email.split('@')[0] + '_' + randomBytes(4).toString('hex');
+        user = await storage.createUser({
+          username,
+          email,
+          name: name ?? email.split('@')[0],
+          avatar: picture ?? undefined,
+          firebaseUid: uid,
+          vapidSubscription: undefined,
+        });
+      }
+    }
+
+    // Type guard: Ensure user is not undefined
+    if (!user || !user.id) {
+      throw new Error("User creation or fetch failed.");
+    }
+
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "7d" });
+
+    res.json({
+      user: { ...user, password: undefined },
+      token,
+      vapidPublicKey: VAPID_PUBLIC_KEY,
+    });
+
+  } catch (error: any) {
+    console.error("Google auth error:", error);
+    res.status(400).json({ message: error.message || "Authentication failed" });
+  }
+});
   // User routes
   app.get("/api/user/me", authenticateToken, async (req: any, res) => {
     res.json({ ...req.user, password: undefined });
@@ -374,8 +439,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             JSON.stringify({
               title: validatedData.title,
               message: validatedData.message,
-              icon: '/icon-192x192.png',
-              badge: '/badge-72x72.png',
+              icon: '/icon-192x192.svg',
+              badge: '/badge-72x72.svg',
             })
           );
           console.log(`Push notification sent to ${friend.name}`);
@@ -385,6 +450,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Update message status to failed if push fails
         await storage.updateMessage(message.id, { status: "failed" });
       }
+
+      res.json(message);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Schedule notification endpoint
+  app.post("/api/messages/schedule", authenticateToken, async (req: any, res) => {
+    try {
+      const validatedData = messageSchema.parse(req.body);
+      
+      const friend = await storage.getFriend(validatedData.friendId);
+      if (!friend || friend.userId !== req.user.id) {
+        return res.status(404).json({ message: "Friend not found" });
+      }
+
+      if (!friend.isActive || !friend.vapidSubscription) {
+        return res.status(400).json({ message: "Friend has not enabled notifications" });
+      }
+
+      if (!validatedData.scheduledFor) {
+        return res.status(400).json({ message: "Scheduled date and time are required" });
+      }
+
+      const scheduledDate = new Date(validatedData.scheduledFor);
+      
+      // Validate that the scheduled date is in the future
+      if (scheduledDate <= new Date()) {
+        return res.status(400).json({ message: "Scheduled time must be in the future" });
+      }
+
+      // Create message record with scheduled status
+      const message = await storage.createMessage({
+        userId: req.user.id,
+        friendId: friend.id,
+        title: validatedData.title,
+        message: validatedData.message,
+        status: "scheduled",
+        scheduledFor: scheduledDate
+      });
 
       res.json(message);
     } catch (error: any) {

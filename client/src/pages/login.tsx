@@ -86,11 +86,15 @@ export default function Login() {
   useEffect(() => {
     // Check for redirect result on page load
     const checkRedirectResult = async () => {
+      console.log("Checking redirect result...");
       const result = await firebaseService.handleRedirectResult();
+      console.log("Redirect result:", result);
       if (result) {
         setIsLoading(true);
         try {
+          console.log("Calling googleAuth with token:", result.idToken.substring(0, 10) + "...");
           const response = await authService.googleAuth(result.idToken);
+          console.log("Google auth response:", response);
           await notificationService.initializeVapid(response.vapidPublicKey);
           
           toast({
@@ -98,8 +102,11 @@ export default function Login() {
             description: "Successfully signed in with Google.",
           });
           
-          setLocation("/dashboard");
+          console.log("Redirecting to dashboard...");
+          // Try direct navigation instead of using wouter's setLocation
+          window.location.href = "/dashboard";
         } catch (error: any) {
+          console.error("Google auth error:", error);
           toast({
             title: "Authentication failed",
             description: error.message || "Failed to authenticate with Google",
@@ -114,15 +121,35 @@ export default function Login() {
     checkRedirectResult();
   }, [setLocation, toast]);
 
+
   const handleGoogleAuth = async () => {
     setIsLoading(true);
     try {
-      await firebaseService.signInWithGoogle();
-      // Redirect will happen automatically, result handled in useEffect
+      console.log("Login: Starting Google auth with popup...");
+      const result = await firebaseService.signInWithGoogle();
+      console.log("Login: Received popup result:", result ? "Result exists" : "No result");
+      
+      if (result) {
+        console.log("Login: Calling googleAuth with token from popup...");
+        const response = await authService.googleAuth(result.idToken);
+        console.log("Login: Google auth response received");
+        await notificationService.initializeVapid(response.vapidPublicKey);
+        
+        toast({
+          title: "Welcome to NotiFiesta!",
+          description: "Successfully signed in with Google.",
+        });
+        
+        console.log("Login: Redirecting to dashboard from popup flow...");
+        window.location.href = "/dashboard";
+      } else {
+        throw new Error("No authentication result received");
+      }
     } catch (error: any) {
+      console.error("Login: Error in Google auth popup flow:", error);
       toast({
         title: "Authentication failed",
-        description: error.message || "Failed to initiate Google sign-in",
+        description: error.message || "Failed to authenticate with Google",
         variant: "destructive",
       });
       setIsLoading(false);
@@ -141,9 +168,12 @@ export default function Login() {
         <div className="max-w-md w-full">
           {/* Logo/Brand */}
           <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-white mb-3 tracking-wide">
-              NotiFiesta
-            </h1>
+            <div className="flex items-center justify-center mb-3">
+              <img src="/favicon.svg" alt="NotiFiesta Logo" className="w-10 h-10 mr-3" />
+              <h1 className="text-5xl font-bold text-white tracking-wide">
+                NotiFiesta
+              </h1>
+            </div>
             <p className="text-gray-400 font-mono text-sm tracking-wider">Professional Push Notification Platform</p>
             <div className="w-24 h-px gradient-accent mx-auto mt-6 opacity-60"></div>
           </div>
