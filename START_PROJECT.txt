@@ -1,0 +1,50 @@
+# How to Start the Book Recommendation Project
+
+1. **Clone or Download the Project**
+   - Place the project folder on your machine.
+
+2. **Install Python (if not already installed)**
+   - Recommended: Python 3.8+
+
+3. **Create a Virtual Environment (optional but recommended)**
+   ```bash
+   python -m venv venv
+   # On Windows:
+   venv\Scripts\activate
+   # On Mac/Linux:
+   source venv/bin/activate
+   ```
+
+4. **Install Requirements**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. **Scrape and Prepare Book Data (first time only)**
+   ```bash
+   python manage.py scrape_books
+   ```
+   - This will download all book data and images, and create `books.json`.
+
+6. **Run Database Migrations**
+   ```bash
+   python manage.py migrate
+   ```
+
+7. **Start the Django Development Server**
+   ```bash
+   python manage.py runserver
+   ```
+
+8. **Access the Website**
+   - Open your browser and go to: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+
+9. **Use the API**
+   - Example: [http://127.0.0.1:8000/api/recommend/?q=magic](http://127.0.0.1:8000/api/recommend/?q=magic)
+
+---
+
+# Notes
+- The first run of `scrape_books` may take several minutes (downloads all books and images).
+- All recommendations are AI-powered and run locally (no external API needed).
+- Images are served from the local `images/` folder. 
